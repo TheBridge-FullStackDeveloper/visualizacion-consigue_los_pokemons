@@ -1,8 +1,13 @@
-async function getPokemon(pokemon) {
+async function getPokemon(pokemon = "") {
     return new Promise((resolve, reject) => {
-        fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).catch(reject).then(data => data.status === 200 ? data.json() : reject(data.status)).then(data => {
-            if (data.count)
-                resolve(data.results);
+        fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).catch(reject).then(data => data.status === 200 ? data.json() : reject(data.status)).then(async data => {
+            if (data.count) {
+                let res = [];
+                for (let i = 0; i < data.results.length; i++) {
+                    res.push(await (await fetch(data.results[i].url)).json());
+                }
+                resolve(res);
+            }
             resolve([data]);
         });
     });
